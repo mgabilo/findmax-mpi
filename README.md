@@ -1,5 +1,10 @@
 # findmax-mpi
 
+This is a parallel program using MPI to find the max of set of
+numbers. This was just an academic exercise and in practice you should
+use a call to MPI_Reduce to accomplish this.
+
+
 The program findmax-mpi takes in a number of processors *p* and an
 input size *n*, and
 
