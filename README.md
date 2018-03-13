@@ -49,19 +49,20 @@ processors, labeled rank 0 through rank 15. Each processor has
 generated its local maximum, e.g., the maximum of rank (processor) 2
 is 232.
 
-In level 0, the processors in even-numbered positions receive the
+In level 0, each processor in an even-numbered position receives the
 local maximum of the processor directly to its right (rank *r + 2^l*
 where *r* is the rank of the processor in the even-numbered position).
 For example, the even-numbered position processor with rank 0 (with
 local maximum 32) receives the local maximum of processor with rank 1
-(43), which lies directly to its right on that level.  Processor with
-rank 1 will become idle. This same even-numbered position processor
-(rank 0) then becomes a parent at level 1 and updates its maximum to
-be 43 (max of 32 and 43).  The same process happens in parallel
-between ranks 2 and 3; ranks 3 and 4; and so on.
+(43), which lies directly to its right on that level.  The processor
+with rank 1 will become idle. This same even-numbered position
+processor (rank 0) then becomes a parent at level 1 and updates its
+maximum to be 43 (max of 32 and 43).  The same process happens in
+parallel between ranks 2 and 3; ranks 3 and 4; and so on.
 
-The above process begins again at level 1.  For example, in level 1,
-the processor with rank 4 is in an even-numbered position (position 2,
+Once all of the pairs in level 0 are finished communicating, the above
+process begins again at level 1.  For example, in level 1, the
+processor with rank 4 is in an even-numbered position (position 2,
 since positions start from 0) -- local maximum 2.  That means it will
 receive the local maximum of the odd-numbered position processor
 directly to its right, processor with rank 6 -- local maximum 91.  The
