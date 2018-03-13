@@ -14,20 +14,63 @@ The processors communicate in stages, or "levels". At level 0, each
 processor has found its local maximum. Each processor is assigned a
 number from 0 to *p-1*, called the rank, denoted *r*. A processor of
 rank *r* that is in an even-numbered position on the current level *l*
-expects to receive the maximum from processor with rank *r + 2^l*. A
-processor of rank *r* that is in an odd-numbered position on the
-current level *l* expects to send its maximum to the processor with
-rank *r - 2^l*. Processors in even-numbered positions on that level
-become parents on the next level. Processors in odd-numbered positions
-on that level send their local maximum to their parent and become idle
-after that. See the image below for an illustration of this idea with
-*p = 16*.
+expects to receive the local maximum of processor with rank *r + 2^l*
+(conversely, a processor of rank *r* that is in an odd-numbered
+position on the current level *l* expects to send its local maximum to
+the processor with rank *r - 2^l*).
+
+The processor in the even-numbered position with rank *r* now has its
+own local maximum (say *MAX1*) as well as the local maximum of
+processor with rank *r + 2^l* (say *MAX2*).  This same processor,
+which is on level *l*, will then become a parent on level *l+1* and
+will update its maximum to be the maximum of *MAX1* and *MAX2*.  This
+goes for all processors on even-numbered positions on level *l*.  The
+processors in the odd-numbered positions will become idle from then on
+(starting at level *l+1*).  See the image below for an illustration of
+this idea with *p = 16*.
+
+Note that for the even- and odd-numbered positions, the positions
+start at 0 and are distinct from the rank. For example, on level 1,
+the node with rank 0 is in an even-numbered position (0), while the
+node with rank 2 is in an odd-numbered position (1).
+
+
 
 ![alt text](https://github.com/mgabilo/findmax-mpi/blob/master/tree.png "findmax-mpi execution for 16 processors")
 
 There are *O(log p)* levels since the above forms a complete binary
 tree. Each level takes place in parallel, but the processors must
 synchronize at each level.
+
+## Algorithm walk-through
+
+In the image above, the program begins at level 0 with 16 parallel
+processors, labeled rank 0 through rank 15. Each processor has
+generated its local maximum, e.g., the maximum of rank (processor) 2
+is 232.
+
+In level 0, the processors in even-numbered positions receive the
+local maximum of the processor directly to its right (rank *r + 2^l*
+where *r* is the rank of the processor in the even-numbered position).
+For example, the even-numbered position processor with rank 0 (with
+local maximum 32) receives the local maximum of processor with rank 1
+(43), which lies directly to its right on that level.  Processor with
+rank 1 will become idle. This same even-numbered position processor
+(rank 0) then becomes a parent at level 1 and updates its maximum to
+be 43 (max of 32 and 43).  The same process happens in parallel
+between ranks 2 and 3; ranks 3 and 4; and so on.
+
+The above process begins again at level 1.  For example, in level 1,
+the processor with rank 4 is in an even-numbered position (position 2,
+since positions start from 0) -- local maximum 2.  That means it will
+receive the local maximum of the odd-numbered position processor
+directly to its right, processor with rank 6 -- local maximum 91.  The
+even-numbered position processor with rank 4 will store the new
+maximum the two local maximums in the level 2 (91).  Processor with
+rank 6 will become idle.
+
+This process continues until the global maximum is propagated upwards
+to level 4 (232).
 
 ## Running the program
 
