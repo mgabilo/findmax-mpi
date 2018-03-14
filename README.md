@@ -68,12 +68,12 @@ parallel between ranks 2 and 3; ranks 3 and 4; and so on.
 Once all of the pairs in level 0 are finished communicating, the above
 process begins again at level 1.  For example, in level 1, the
 processor with rank 4 is in an even-numbered position (position 2,
-since positions start from 0) -- local maximum 2.  That means it will
-receive the local maximum of the odd-numbered position processor
-directly to its right, processor with rank 6 -- local maximum 91.  The
-even-numbered position processor with rank 4 will store the new
-maximum the two local maximums in the level 2 (91).  Processor with
-rank 6 will become idle.
+since positions start from 0).  That means it will receive the local
+maximum of the odd-numbered position processor directly to its right,
+processor with rank 6.  In level 2, this even-numbered position
+processor with rank 4 will store the new maximum of these two local
+maximums (91).  The processor with rank 6 will become idle starting at
+level 2.
 
 This process continues until the global maximum is propagated upwards
 to level 4 (232).
@@ -91,10 +91,14 @@ To compile the program type "make" which compiles the program with
 "mpicxx".
 
 To run the program use "mpirun". For example, the following commands
-runs the program with 8 processors.
+runs the program with 8 processors, where each processor generatres
+256000000/8 random numbers in order to find their maximum (this number
+is optional and the processors generate 256000000 / *p* numbers by
+default, where *p* is the number of processors).
+
 
 ```
-mpirun -np 8 ./findmax
+mpirun -np 8 ./findmax 256000000
 ```
 
 
@@ -103,7 +107,8 @@ mpirun -np 8 ./findmax
 I tested the program on this quad-core processor: Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz
 
 The execution time in seconds, speedup and efficiency for 1, 2, 4, 8,
-and 16 processors is show below. The execution times were averaged over 100 runs.
+and 16 processors is show below. The execution times were averaged
+over 100 runs. Each processor generates 256000000 random numbers.
 
 
 | Processors                | 2       |  4      |  8       | 16      |  1       |
